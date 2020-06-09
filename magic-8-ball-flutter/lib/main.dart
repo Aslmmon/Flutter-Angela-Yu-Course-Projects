@@ -37,7 +37,6 @@ class _MagicBallStateState extends State<MagicBallState> {
           print(iconName);
         },
         child: Container(
-
           child: Image.asset("images/ball$iconName.png"),
 
         ),
