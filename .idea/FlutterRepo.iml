@@ -11,6 +11,8 @@
       <excludeFolder url="file://$MODULE_DIR$/magic-8-ball-flutter/build" />
       <excludeFolder url="file://$MODULE_DIR$/quizzler-flutter/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/quizzler-flutter/build" />
+      <excludeFolder url="file://$MODULE_DIR$/xylophone-flutter/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/xylophone-flutter/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
