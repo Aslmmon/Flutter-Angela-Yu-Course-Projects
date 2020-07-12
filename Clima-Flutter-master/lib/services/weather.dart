@@ -8,6 +8,15 @@ class WeatherModel {
   final api_key = "01ed0bf33f0d52e1bad309739903a79b";
 
 
+  Future<dynamic> getWeatherDataByCityName(String cityName) async {
+    var url = '$openWatehrUrl?q=$cityName&appid=$api_key&units="metric"';
+    NetworkingHelper networkingHelper = NetworkingHelper(url: url);
+    var weatherData = await networkingHelper.getData();
+   // print(weatherData);
+    return weatherData;
+
+  }
+
   Future<dynamic> getWeatherData() async {
     var location = Location();
     await location.getCurrentLocation();
