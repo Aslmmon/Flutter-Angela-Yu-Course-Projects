@@ -6,10 +6,10 @@ class Coin{
 
 
   Future<dynamic> getCoinConvertData(String currency) async {
-    var url = '$coinConverterApi/v1/exchangerate/BTC/$currency?apikey=$api_key"';
+    var url = '$coinConverterApi/v1/exchangerate/BTC/$currency?apikey=$api_key';
+    print(url);
     NetworkHelper networkingHelper = NetworkHelper(url: url);
     var coinData = await networkingHelper.getCoinConvertsData();
-     print(coinData);
     return coinData;
 
   }

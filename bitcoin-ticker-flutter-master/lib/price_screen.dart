@@ -1,3 +1,5 @@
+import 'package:bitcoin_ticker/network/NetworkHelper.dart';
+import 'package:bitcoin_ticker/network/coin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'coin_data.dart';
@@ -11,6 +13,32 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = "USD";
+  String assetBase;
+  String assetQuote;
+  double rate = 0;
+
+  var coin = Coin();
+
+  @override
+  void initState() {
+    super.initState();
+      updateUI();
+  }
+  Future<void> updateUI() async {
+    var data = await coin.getCoinConvertData(selectedCurrency);
+    setState(() {
+      if(data!=null){
+        assetBase  = data["asset_id_base"];
+        assetQuote = data["asset_id_quote"];
+        rate = data["rate"];
+      }else{
+        rate = 0;
+      }
+    });
+
+    print(data);
+  }
+
 
   Widget getPicker() {
     if (Platform.isIOS) {
@@ -24,7 +52,6 @@ class _PriceScreenState extends State<PriceScreen> {
     List<DropdownMenuItem<String>> menuItems = [];
     for (int i = 0; i < currenciesList.length; i++) {
       String currency = currenciesList[i];
-      print(currency);
       var newItem = DropdownMenuItem(child: Text(currency), value: currency);
       menuItems.add(newItem);
     }
@@ -34,6 +61,7 @@ class _PriceScreenState extends State<PriceScreen> {
       onChanged: (val) {
         setState(() {
           selectedCurrency = val;
+          updateUI();
         });
       },
     );
@@ -43,7 +71,6 @@ class _PriceScreenState extends State<PriceScreen> {
     List<Text> menuItems = [];
     for (int i = 0; i < currenciesList.length; i++) {
       String currency = currenciesList[i];
-      print(currency);
       var newItem = Text(
         currency,
         style: TextStyle(color: Colors.white),
@@ -53,7 +80,10 @@ class _PriceScreenState extends State<PriceScreen> {
     return CupertinoPicker(
         itemExtent: 32,
         onSelectedItemChanged: (selectedIndex) {
-          print(selectedIndex);
+          setState(() {
+            selectedCurrency = currenciesList[selectedIndex];
+          });
+          updateUI();
         },
         children: menuItems);
   }
@@ -79,7 +109,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 BTC = ${rate.toInt()} $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -94,7 +124,7 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: Platform.isIOS ? iosCupertinoPicker() : androidDropDown(),
+            child: Platform.isIOS ? iosCupertinoPicker() : iosCupertinoPicker(),
           ),
         ],
       ),

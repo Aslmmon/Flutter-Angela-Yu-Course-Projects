@@ -9,7 +9,7 @@ class NetworkHelper {
 
   Future getCoinConvertsData() async {
     http.Response response = await http.get(url);
-    if (response.statusCode == 200) {
+    if (response. statusCode == 200) {
       var data = response.body;
       var coinData = jsonDecode(data);
       return coinData;
