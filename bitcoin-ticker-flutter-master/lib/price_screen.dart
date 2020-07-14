@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'coin_data.dart';
 import 'dart:io' show Platform;
 
+var coin = Coin();
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -13,11 +14,14 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = "USD";
-  String assetBase;
+  String assetBase = "LTC";
   String assetQuote;
   double rate = 0;
 
-  var coin = Coin();
+  //value had to be updated into a Map to store the values of all three cryptocurrencies.
+  Map<String, String> coinValues = {};
+  //7: Figure out a way of displaying a '?' on screen while we're waiting for the price data to come back. First we have to create a variable to keep track of when we're waiting on the request to complete.
+  bool isWaiting = false;
 
   @override
   void initState() {
@@ -25,19 +29,16 @@ class _PriceScreenState extends State<PriceScreen> {
       updateUI();
   }
   Future<void> updateUI() async {
+    isWaiting = true;
     var data = await coin.getCoinConvertData(selectedCurrency);
+    isWaiting = false;
     setState(() {
-      if(data!=null){
-        assetBase  = data["asset_id_base"];
-        assetQuote = data["asset_id_quote"];
-        rate = data["rate"];
-      }else{
-        rate = 0;
+      if (data != null) {
+        coinValues = data;
       }
     });
-
-    print(data);
   }
+
 
 
   Widget getPicker() {
@@ -82,8 +83,8 @@ class _PriceScreenState extends State<PriceScreen> {
         onSelectedItemChanged: (selectedIndex) {
           setState(() {
             selectedCurrency = currenciesList[selectedIndex];
+            updateUI();
           });
-          updateUI();
         },
         children: menuItems);
   }
@@ -100,25 +101,17 @@ class _PriceScreenState extends State<PriceScreen> {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = ${rate.toInt()} $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            child: ButtonCardViewWidget(cryptData:"BTC",rate: coinValues["BTC"], selectedCurrency: selectedCurrency),
           ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 0, 18.0, 0),
+            child: ButtonCardViewWidget(cryptData:"ETH",rate: coinValues["ETH"], selectedCurrency: selectedCurrency),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 0, 18.0, 0),
+            child: ButtonCardViewWidget(cryptData:"LTC",rate: coinValues["LTC"], selectedCurrency: selectedCurrency),
+          ),
+
           Container(
             height: 150.0,
             alignment: Alignment.center,
@@ -127,6 +120,41 @@ class _PriceScreenState extends State<PriceScreen> {
             child: Platform.isIOS ? iosCupertinoPicker() : iosCupertinoPicker(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ButtonCardViewWidget extends StatelessWidget {
+  const ButtonCardViewWidget({
+    Key key,
+    @required this.cryptData,
+    @required this.rate,
+    @required this.selectedCurrency,
+  }) : super(key: key);
+
+  final String rate;
+  final String cryptData;
+  final String selectedCurrency;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.lightBlueAccent,
+      elevation: 5.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+        child: Text(
+          '1 $cryptData = $rate $selectedCurrency',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
